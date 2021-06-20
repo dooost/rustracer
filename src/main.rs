@@ -4,6 +4,7 @@ mod image;
 mod math;
 mod color;
 mod ray;
+mod geometry;
 
 use crate::image::Image;
 use math::Vec3;
@@ -44,7 +45,7 @@ fn main() {
         }
     }
 
-    img.write_png("fractal.png");
+    img.write_png("output.png");
 }
 
 fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> f32 {
