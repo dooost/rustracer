@@ -33,7 +33,7 @@ fn main() {
             let u = (i as f32) / (image_width - 1) as f32;
             let v = (j as f32) / (image_height - 1) as f32;
 
-            let ray = Ray::from(
+            let ray = Ray::new(
                 origin, 
                 lower_left_corner + u * horizontal + v * vertical - origin
             );

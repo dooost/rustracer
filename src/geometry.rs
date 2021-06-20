@@ -2,10 +2,10 @@ use crate::math::Vec3;
 use crate::ray::Ray;
 
 pub struct HitRecord {
-    p: Vec3,
-    normal: Vec3,
-    t: f32,
-    front_face: bool
+    pub p: Vec3,
+    pub normal: Vec3,
+    pub t: f32,
+    pub front_face: bool
 }
 
 pub trait Hittable {
@@ -18,7 +18,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    fn new(center: Vec3, radius: f32) -> Self {
+    pub fn new(center: Vec3, radius: f32) -> Self {
         Sphere {
             center,
             radius

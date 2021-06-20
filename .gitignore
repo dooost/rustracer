@@ -1,1 +1,4 @@
 /target
+
+# Ignore test outputs
+output*
