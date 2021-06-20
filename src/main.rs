@@ -47,11 +47,34 @@ fn main() {
     img.write_png("fractal.png");
 }
 
+fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> f32 {
+    let oc: Vec3 = ray.origin - *center;
+    let a = ray.direction.mag_sq();
+    let half_b = oc.dot(ray.direction);
+    let c = oc.mag_sq() - radius * radius;
+    let discriminant = half_b * half_b - a * c;
+
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        (-half_b - discriminant.sqrt()) / a
+    }
+}
+
 fn ray_color(ray: &Ray) -> RgbColor {
+    let t = hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
+    if t > 0.0 {
+        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalized();
+        return 0.5 * RgbColor::new(
+            n.x + 1.0,
+            n.y + 1.0,
+            n.z + 1.0)
+    }
+
     let normalized_direction = ray.direction.normalized();
     let t = 0.5 * (normalized_direction.y + 1.0);
     
-    return (1.0 - t) * RgbColor::new(
+    (1.0 - t) * RgbColor::new(
         1.0, 1.0, 1.0) + t * RgbColor::new(0.5, 0.7, 1.0
-    );
+    )
 }
