@@ -1,13 +1,13 @@
 extern crate image as imagers;
+
 use crate::image::Image;
-use imagers::Rgb;
 
 mod image;
 
 fn main() {
     let w = 1280;
     let h = 720;
-    let mut img: Image<Rgb<u8>> = Image::new(w, h);
+    let mut img = Image::new(w, h);
 
     for x in 0..w {
         for y in 0..h {
