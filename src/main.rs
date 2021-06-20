@@ -1,8 +1,11 @@
 extern crate image as imagers;
 
-use crate::image::Image;
-
 mod image;
+mod math;
+mod color;
+
+use crate::image::Image;
+use color::RgbColor;
 
 fn main() {
     let w = 1280;
@@ -11,11 +14,12 @@ fn main() {
 
     for x in 0..w {
         for y in 0..h {
-            img.set_color_at_pixel(x, 
-                y, 
-                (x as f32) / ((w - 1) as f32), 
-                (y as f32) / ((h - 1) as f32), 
-                1.0)
+            let color = RgbColor::new(
+                (x as f32) / ((w - 1) as f32),
+                (y as f32) / ((h - 1) as f32),
+                1.0
+            );
+            img.set_color_at(x, y, color);
         }
     }
 
