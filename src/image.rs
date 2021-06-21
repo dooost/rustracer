@@ -20,10 +20,11 @@ impl Image {
         }
     }
 
-    pub fn set_color_at(&mut self, x: u32, y: u32, color: RgbColor) {
-        let ru8 = (color.x * u8::MAX as f32) as u8;
-        let gu8 = (color.y * u8::MAX as f32) as u8;
-        let bu8 = (color.z * u8::MAX as f32) as u8;
+    pub fn set_color_at(&mut self, x: u32, y: u32, color: RgbColor, samples_per_pixel: u32) {
+        let adjusted_color = color / (samples_per_pixel as f32);
+        let ru8 = (adjusted_color.x * u8::MAX as f32) as u8;
+        let gu8 = (adjusted_color.y * u8::MAX as f32) as u8;
+        let bu8 = (adjusted_color.z * u8::MAX as f32) as u8;
         let pixel = Rgb([ru8, gu8, bu8]);
         self.buf.put_pixel(x, y, pixel);
     }
