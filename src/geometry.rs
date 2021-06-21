@@ -55,7 +55,7 @@ impl Hittable for Sphere {
 
         let normal;
         let front_face;
-        if ray.direction.dot(outwards_normal) < 0.0 {
+        if ray.direction.dot(outwards_normal) > 0.0 {
             // ray is inside the sphere
             normal = -outwards_normal;
             front_face = false;
