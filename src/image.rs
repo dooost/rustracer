@@ -21,7 +21,11 @@ impl Image {
     }
 
     pub fn set_color_at(&mut self, x: u32, y: u32, color: RgbColor, samples_per_pixel: u32) {
-        let adjusted_color = color / (samples_per_pixel as f32);
+        let mut adjusted_color = color / (samples_per_pixel as f32);
+        adjusted_color.x = adjusted_color.x.sqrt();
+        adjusted_color.y = adjusted_color.y.sqrt();
+        adjusted_color.z = adjusted_color.z.sqrt();
+
         let ru8 = (adjusted_color.x * u8::MAX as f32) as u8;
         let gu8 = (adjusted_color.y * u8::MAX as f32) as u8;
         let bu8 = (adjusted_color.z * u8::MAX as f32) as u8;

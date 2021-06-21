@@ -7,6 +7,7 @@ mod ray;
 mod geometry;
 mod camera;
 
+use math::RandomVec;
 use rand::Rng;
 
 use std::rc::Rc;
@@ -27,7 +28,8 @@ fn main() {
     let aspect_ratio = (image_width as f32) / (image_height as f32);
     let mut img = Image::new(image_width, image_height);
 
-    let samples_per_pixel = 32;
+    let samples_per_pixel = 64;
+    let max_depth = 32;
 
     // World
     let mut world = HittableList::new();
@@ -36,15 +38,6 @@ fn main() {
 
     // Camera
     let camera = Camera::new();
-
-    // let viewport_height = 2.0;
-    // let viewport_width = aspect_ratio * viewport_height;
-    // let focal_length = 1.0;
-
-    // let origin = Vec3::new(0.0, 0.0, 0.0);
-    // let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-    // let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    // let lower_left_corner = origin - (horizontal / 2.0) - (vertical / 2.0) - Vec3::new(0.0, 0.0, focal_length);
 
     let mut rng = rand::thread_rng();
     for i in (0..image_width).rev() {
@@ -56,7 +49,7 @@ fn main() {
                 let v_jitter: f32 = rng.gen();
                 let v = ((j as f32) + v_jitter) / (image_height - 1) as f32;
                 let ray = camera.get_ray(u, v);
-                color += ray_color(&ray, &world);
+                color += ray_color(&ray, &world, max_depth);
             }
 
             // The image crate's coordinate system starts from the top left corner,
@@ -69,15 +62,20 @@ fn main() {
     img.write_png("output.png");
 }
 
-fn ray_color(ray: &Ray, world: &impl Hittable) -> RgbColor {
-    if let Some(record) = world.hit(ray, 0.0, f32::INFINITY) {
-        return 0.5 * (record.normal + RgbColor::new(1.0,1.0,1.0));
+fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> RgbColor {
+    if depth <= 0 {
+        return RgbColor::new(0.0, 0.0, 0.0);
+    }
+
+    if let Some(record) = world.hit(ray, 0.001, f32::INFINITY) {
+        let random_in_unit_sphere = Vec3::random_in_unit_sphere();
+        let target = record.p + record.normal + random_in_unit_sphere;
+        let p_to_target = Ray::new(record.p, target - record.p);
+        return 0.5 * ray_color(&p_to_target, world, depth - 1);
     }
 
     let normalized_direction = ray.direction.normalized();
     let t = 0.5 * (normalized_direction.y + 1.0);
     
-    (1.0 - t) * RgbColor::new(
-        1.0, 1.0, 1.0) + t * RgbColor::new(0.5, 0.7, 1.0
-    )
+    (1.0 - t) * RgbColor::new( 1.0, 1.0, 1.0) + t * RgbColor::new(0.5, 0.7, 1.0)
 }

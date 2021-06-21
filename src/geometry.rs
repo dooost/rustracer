@@ -60,7 +60,7 @@ impl Hittable for Sphere {
             normal = -outwards_normal;
             front_face = false;
         } else {
-            // ray is inside the sphere
+            // ray is outside the sphere
             normal = outwards_normal;
             front_face = true;
         }
