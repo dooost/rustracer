@@ -10,7 +10,6 @@ use std::rc::Rc;
 
 use crate::image::Image;
 use geometry::Hittable;
-use geometry::HitRecord;
 use geometry::HittableList;
 use geometry::Sphere;
 use math::Vec3;
@@ -59,21 +58,7 @@ fn main() {
     img.write_png("output.png");
 }
 
-fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> f32 {
-    let oc: Vec3 = ray.origin - *center;
-    let a = ray.direction.mag_sq();
-    let half_b = oc.dot(ray.direction);
-    let c = oc.mag_sq() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b - discriminant.sqrt()) / a
-    }
-}
-
-fn ray_color(ray: &Ray, world: &Hittable) -> RgbColor {
+fn ray_color(ray: &Ray, world: &impl Hittable) -> RgbColor {
     if let Some(record) = world.hit(ray, 0.0, 1000000.0) {
         return 0.5 * (record.normal + RgbColor::new(1.0,1.0,1.0));
     }
