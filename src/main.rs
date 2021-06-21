@@ -6,7 +6,13 @@ mod color;
 mod ray;
 mod geometry;
 
+use std::rc::Rc;
+
 use crate::image::Image;
+use geometry::Hittable;
+use geometry::HitRecord;
+use geometry::HittableList;
+use geometry::Sphere;
 use math::Vec3;
 use color::RgbColor;
 use ray::Ray;
@@ -17,6 +23,11 @@ fn main() {
     let image_width = 1280;
     let aspect_ratio = (image_width as f32) / (image_height as f32);
     let mut img = Image::new(image_width, image_height);
+
+    // World
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5)));
+    world.add(Rc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0)));
 
     // Camera
     let viewport_height = 2.0;
@@ -41,7 +52,7 @@ fn main() {
             // The image crate's coordinate system starts from the top left corner,
             // but ours is from the bottom left, so we need to flip it vertically
             let j_in_image_coords = image_height - j - 1;
-            img.set_color_at(i, j_in_image_coords, ray_color(&ray));
+            img.set_color_at(i, j_in_image_coords, ray_color(&ray, &world));
         }
     }
 
@@ -62,14 +73,9 @@ fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> f32 {
     }
 }
 
-fn ray_color(ray: &Ray) -> RgbColor {
-    let t = hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
-    if t > 0.0 {
-        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalized();
-        return 0.5 * RgbColor::new(
-            n.x + 1.0,
-            n.y + 1.0,
-            n.z + 1.0)
+fn ray_color(ray: &Ray, world: &Hittable) -> RgbColor {
+    if let Some(record) = world.hit(ray, 0.0, 1000000.0) {
+        return 0.5 * (record.normal + RgbColor::new(1.0,1.0,1.0));
     }
 
     let normalized_direction = ray.direction.normalized();

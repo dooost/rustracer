@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::math::Vec3;
 use crate::ray::Ray;
 
@@ -69,5 +71,41 @@ impl Hittable for Sphere {
             t,
             front_face
         })
+    }
+}
+
+pub struct HittableList {
+    objects: Vec<Rc<dyn Hittable>>
+}
+
+impl HittableList {
+    pub fn new() -> Self {
+        HittableList {
+            objects: vec![],
+        }
+    }
+
+    pub fn add(&mut self, object: Rc<dyn Hittable>) {
+        self.objects.push(object);
+    }
+
+    pub fn clear(&mut self) {
+        self.objects.clear();
+    }
+}
+
+impl Hittable for HittableList {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let mut result: Option<HitRecord> = None;
+        let mut closest_yet = t_max;
+
+        for object in self.objects.iter() {
+            if let Some(record) = object.hit(ray, t_min, closest_yet) {
+                closest_yet = record.t;
+                result = Some(record);
+            }
+        }
+        
+        result
     }
 }
