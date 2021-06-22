@@ -2,6 +2,17 @@ pub use ultraviolet::Vec3;
 
 use rand::Rng;
 
+pub trait VecApprox {
+    fn is_near_zero(&self) -> bool;
+}
+
+impl VecApprox for Vec3 {
+    fn is_near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+}
+
 pub trait RandomVec {
     fn random() -> Self;
     fn random_bounded(min: f32, max: f32) -> Self;

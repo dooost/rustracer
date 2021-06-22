@@ -1,7 +1,6 @@
 use std::path::Path;
 
-use imagers::ImageBuffer;
-use imagers::Rgb;
+use imagers::{ImageBuffer, Rgb};
 
 use crate::color::RgbColor;
 

@@ -2,12 +2,14 @@ use std::rc::Rc;
 
 use crate::math::Vec3;
 use crate::ray::Ray;
+use crate::material::Material;
 
 pub struct HitRecord {
     pub p: Vec3,
     pub normal: Vec3,
     pub t: f32,
-    pub front_face: bool
+    pub front_face: bool,
+    pub material: Rc<dyn Material>
 }
 
 pub trait Hittable {
@@ -16,14 +18,16 @@ pub trait Hittable {
 
 pub struct Sphere {
     pub center: Vec3,
-    pub radius: f32
+    pub radius: f32,
+    pub material: Rc<dyn Material>
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f32) -> Self {
+    pub fn new(center: Vec3, radius: f32, material: Rc<dyn Material>) -> Self {
         Sphere {
             center,
-            radius
+            radius,
+            material
         }
     }
 }
@@ -65,11 +69,13 @@ impl Hittable for Sphere {
             front_face = true;
         }
 
+        let material = Rc::clone(&self.material);
         Some(HitRecord {
             p,
             normal,
             t,
-            front_face
+            front_face,
+            material
         })
     }
 }

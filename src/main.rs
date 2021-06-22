@@ -6,20 +6,19 @@ mod color;
 mod ray;
 mod geometry;
 mod camera;
+mod material;
 
-use math::RandomVec;
 use rand::Rng;
 
 use std::rc::Rc;
 
 use crate::image::Image;
 use camera::Camera;
-use geometry::Hittable;
-use geometry::HittableList;
-use geometry::Sphere;
+use geometry::{Hittable, HittableList, Sphere};
 use math::Vec3;
 use color::RgbColor;
 use ray::Ray;
+use material::{Lambertian, Metal};
 
 fn main() {
     // Image
@@ -27,13 +26,21 @@ fn main() {
     let image_width = 1280;
     let mut img = Image::new(image_width, image_height);
 
-    let samples_per_pixel = 64;
+    let samples_per_pixel = 512;
     let max_depth = 32;
 
     // World
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5)));
-    world.add(Rc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0)));
+
+    let material_ground = Rc::new(Lambertian { albedo: Vec3::new(0.8, 0.8, 0.0) });
+    let material_center = Rc::new(Lambertian { albedo: Vec3::new(0.7, 0.3, 0.3) });
+    let material_left = Rc::new(Metal { albedo: Vec3::new(0.8, 0.8, 0.8) });
+    let material_right = Rc::new(Metal { albedo: Vec3::new(0.8, 0.6, 0.2) });
+
+    world.add(Rc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0, material_ground)));
+    world.add(Rc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5, material_center)));
+    world.add(Rc::new(Sphere::new(Vec3::new(1.0,0.0,-1.0), 0.5, material_right)));
+    world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), 0.5, material_left)));
 
     // Camera
     let camera = Camera::new();
@@ -67,9 +74,12 @@ fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> RgbColor {
     }
 
     if let Some(record) = world.hit(ray, 0.001, f32::INFINITY) {
-        let target = record.p + record.normal + Vec3::random_unit_vec();
-        let p_to_target = Ray::new(record.p, target - record.p);
-        return 0.5 * ray_color(&p_to_target, world, depth - 1);
+        match record.material.scatter(ray, &record) {
+            None => return RgbColor::new(0.0, 0.0, 0.0),
+            Some((attentuation, scattered_ray)) => {
+                return attentuation * ray_color(&scattered_ray, world, depth - 1);
+            }
+        }
     }
 
     let normalized_direction = ray.direction.normalized();
