@@ -6,6 +6,7 @@ pub trait RandomVec {
     fn random() -> Self;
     fn random_bounded(min: f32, max: f32) -> Self;
     fn random_in_unit_sphere() -> Self;
+    fn random_unit_vec() -> Self;
 }
 
 impl RandomVec for Vec3 {
@@ -31,5 +32,9 @@ impl RandomVec for Vec3 {
             }
             return p;
         }
+    }
+
+    fn random_unit_vec() -> Self {
+        Self::random_in_unit_sphere().normalized()
     }
 }

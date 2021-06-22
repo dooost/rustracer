@@ -25,7 +25,6 @@ fn main() {
     // Image
     let image_height = 720;
     let image_width = 1280;
-    let aspect_ratio = (image_width as f32) / (image_height as f32);
     let mut img = Image::new(image_width, image_height);
 
     let samples_per_pixel = 64;
@@ -68,8 +67,7 @@ fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> RgbColor {
     }
 
     if let Some(record) = world.hit(ray, 0.001, f32::INFINITY) {
-        let random_in_unit_sphere = Vec3::random_in_unit_sphere();
-        let target = record.p + record.normal + random_in_unit_sphere;
+        let target = record.p + record.normal + Vec3::random_unit_vec();
         let p_to_target = Ray::new(record.p, target - record.p);
         return 0.5 * ray_color(&p_to_target, world, depth - 1);
     }
