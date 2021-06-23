@@ -6,8 +6,26 @@ pub struct Lambertian {
     pub albedo: Vec3
 }
 
+impl Lambertian {
+    pub fn new(albedo: Vec3) -> Self {
+        Lambertian {
+            albedo
+        }
+    }
+}
+
 pub struct Metal {
-    pub albedo: Vec3
+    pub albedo: Vec3,
+    pub fuzziness: f32
+}
+
+impl Metal {
+    pub fn new(albedo: Vec3, fuzziness: f32) -> Self {
+        Metal {
+            albedo,
+            fuzziness: if fuzziness < 1.0 { fuzziness } else { 1.0 }
+        }
+    }
 }
 
 pub trait Material {
@@ -29,7 +47,7 @@ impl Material for Lambertian {
 impl Material for Metal {
     fn scatter(&self, ray: &Ray, hit_rec: &HitRecord) -> Option<(Vec3, Ray)> {
         let reflected = ray.direction.normalized().reflected(hit_rec.normal);
-        let scattered_ray = Ray::new(hit_rec.p, reflected);
+        let scattered_ray = Ray::new(hit_rec.p, reflected + self.fuzziness * Vec3::random_in_unit_sphere());
         if scattered_ray.direction.dot(hit_rec.normal) > 0.0 {
             let attentuation = self.albedo;
             Some((attentuation, scattered_ray))
