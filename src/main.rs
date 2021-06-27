@@ -22,12 +22,13 @@ use material::{Dielectric, Lambertian, Metal};
 
 fn main() {
     // Image
+    let aspect_ratio = 16.0 / 9.0;
     let image_height = 720;
-    let image_width = 1280;
+    let image_width = (image_height as f32 * aspect_ratio) as u32;
     let mut img = Image::new(image_width, image_height);
 
-    let samples_per_pixel = 512;
-    let max_depth = 32;
+    let samples_per_pixel = 64;
+    let max_depth = 16;
 
     // World
     let mut world = HittableList::new();
@@ -44,7 +45,10 @@ fn main() {
     world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), -0.4, material_left.clone())));
 
     // Camera
-    let camera = Camera::new();
+    let from = Vec3::new(-2.0, 2.0, 1.0);
+    let at = Vec3::new(0.0, 0.0, -1.0);
+    let up = Vec3::new(0.0, 1.0, 0.0);
+    let camera = Camera::new(from, at, up,20.0, aspect_ratio);
 
     let mut rng = rand::thread_rng();
     for i in (0..image_width).rev() {
