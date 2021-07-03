@@ -50,9 +50,14 @@ fn main() {
     let aperture = 0.1;
     let camera = Camera::new(from, at, up,20.0, aspect_ratio, aperture, focus_dist);
 
+    let mut current_pixel: u32 = 0;
+    let total_pixels = image_height * image_width;
     let mut rng = rand::thread_rng();
     for i in (0..image_width).rev() {
         for j in 0..image_height {
+            current_pixel += 1;
+            println!("Rendering {}/{}...", current_pixel, total_pixels);
+
             let mut color = RgbColor::new(0.0, 0.0, 0.0);
             for _s in 0..samples_per_pixel {
                 let u_jitter: f32 = rng.gen();
