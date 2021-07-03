@@ -28,28 +28,28 @@ fn main() {
     let mut img = Image::new(image_width, image_height);
 
     let samples_per_pixel = 512;
-    let max_depth = 32;
+    let max_depth = 50;
 
     // World
-    let mut world = HittableList::new();
+    let mut world = HittableList::sample_scene();
 
-    let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
-    let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
-    let material_left = Rc::new(Dielectric::new(1.5));
-    let material_right = Rc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.1));
+    // let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
+    // let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
+    // let material_left = Rc::new(Dielectric::new(1.5));
+    // let material_right = Rc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.1));
 
-    world.add(Rc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0, material_ground.clone())));
-    world.add(Rc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5, material_center.clone())));
-    world.add(Rc::new(Sphere::new(Vec3::new(1.0,0.0,-1.0), 0.5, material_right.clone())));
-    world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), 0.5, material_left.clone())));
-    world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), -0.4, material_left.clone())));
+    // world.add(Rc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0, material_ground.clone())));
+    // world.add(Rc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5, material_center.clone())));
+    // world.add(Rc::new(Sphere::new(Vec3::new(1.0,0.0,-1.0), 0.5, material_right.clone())));
+    // world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), 0.5, material_left.clone())));
+    // world.add(Rc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), -0.4, material_left.clone())));
 
     // Camera
-    let from = Vec3::new(3.0, 3.0, 2.0);
-    let at = Vec3::new(0.0, 0.0, -1.0);
+    let from = Vec3::new(13.0, 2.0, 3.0);
+    let at = Vec3::new(0.0, 0.0, 0.0);
     let up = Vec3::new(0.0, 1.0, 0.0);
-    let focus_dist = (from - at).mag();
-    let aperture = 2.0;
+    let focus_dist = 10.0;
+    let aperture = 0.1;
     let camera = Camera::new(from, at, up,20.0, aspect_ratio, aperture, focus_dist);
 
     let mut rng = rand::thread_rng();
