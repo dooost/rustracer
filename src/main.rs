@@ -10,15 +10,13 @@ mod material;
 
 use rand::Rng;
 
-use std::rc::Rc;
 
 use crate::image::Image;
 use camera::Camera;
-use geometry::{Hittable, HittableList, Sphere};
+use geometry::{Hittable, HittableList};
 use math::Vec3;
 use color::RgbColor;
 use ray::Ray;
-use material::{Dielectric, Lambertian, Metal};
 
 fn main() {
     // Image
@@ -31,7 +29,7 @@ fn main() {
     let max_depth = 50;
 
     // World
-    let mut world = HittableList::sample_scene();
+    let world = HittableList::sample_scene();
 
     // let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
     // let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
