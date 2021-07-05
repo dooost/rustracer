@@ -1,21 +1,20 @@
 extern crate image as imagers;
 
-mod image;
-mod math;
-mod color;
-mod ray;
-mod geometry;
 mod camera;
+mod color;
+mod geometry;
+mod image;
 mod material;
+mod math;
+mod ray;
 
 use rand::Rng;
 
-
 use crate::image::Image;
 use camera::Camera;
+use color::RgbColor;
 use geometry::{Hittable, HittableList};
 use math::Vec3;
-use color::RgbColor;
 use ray::Ray;
 
 fn main() {
@@ -48,7 +47,7 @@ fn main() {
     let up = Vec3::new(0.0, 1.0, 0.0);
     let focus_dist = 10.0;
     let aperture = 0.1;
-    let camera = Camera::new(from, at, up,20.0, aspect_ratio, aperture, focus_dist);
+    let camera = Camera::new(from, at, up, 20.0, aspect_ratio, aperture, focus_dist);
 
     let mut current_pixel: u32 = 0;
     let total_pixels = image_height * image_width;
@@ -94,6 +93,6 @@ fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> RgbColor {
 
     let normalized_direction = ray.direction.normalized();
     let t = 0.5 * (normalized_direction.y + 1.0);
-    
-    (1.0 - t) * RgbColor::new( 1.0, 1.0, 1.0) + t * RgbColor::new(0.5, 0.7, 1.0)
+
+    (1.0 - t) * RgbColor::new(1.0, 1.0, 1.0) + t * RgbColor::new(0.5, 0.7, 1.0)
 }

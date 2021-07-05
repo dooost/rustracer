@@ -7,7 +7,7 @@ use crate::color::RgbColor;
 pub struct Image {
     pub width: u32,
     pub height: u32,
-    buf: ImageBuffer<Rgb<u8>, Vec<u8>>
+    buf: ImageBuffer<Rgb<u8>, Vec<u8>>,
 }
 
 impl Image {
@@ -15,7 +15,7 @@ impl Image {
         Image {
             width,
             height,
-            buf: ImageBuffer::new(width, height)
+            buf: ImageBuffer::new(width, height),
         }
     }
 

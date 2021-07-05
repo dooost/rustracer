@@ -1,45 +1,41 @@
 use crate::color::RgbColor;
 use crate::geometry::HitRecord;
-use crate::ray::Ray;
 use crate::math::{RandomVec, Vec3, VecApprox};
+use crate::ray::Ray;
 
 use rand::Rng;
 
 pub struct Lambertian {
-    pub albedo: RgbColor
+    pub albedo: RgbColor,
 }
 
 impl Lambertian {
     pub fn new(albedo: RgbColor) -> Self {
-        Lambertian {
-            albedo
-        }
+        Lambertian { albedo }
     }
 }
 
 pub struct Metal {
     pub albedo: RgbColor,
-    pub fuzziness: f32
+    pub fuzziness: f32,
 }
 
 impl Metal {
     pub fn new(albedo: RgbColor, fuzziness: f32) -> Self {
         Metal {
             albedo,
-            fuzziness: if fuzziness < 1.0 { fuzziness } else { 1.0 }
+            fuzziness: if fuzziness < 1.0 { fuzziness } else { 1.0 },
         }
     }
 }
 
 pub struct Dielectric {
-    pub refractive_index: f32
+    pub refractive_index: f32,
 }
 
 impl Dielectric {
     pub fn new(refractive_index: f32) -> Self {
-        Dielectric {
-            refractive_index
-        }
+        Dielectric { refractive_index }
     }
 
     fn reflectance(cos: f32, refractive_index: f32) -> f32 {
@@ -68,7 +64,10 @@ impl Material for Lambertian {
 impl Material for Metal {
     fn scatter(&self, ray: &Ray, hit_rec: &HitRecord) -> Option<(RgbColor, Ray)> {
         let reflected = ray.direction.normalized().reflected(hit_rec.normal);
-        let scattered_ray = Ray::new(hit_rec.p, reflected + self.fuzziness * Vec3::random_in_unit_sphere());
+        let scattered_ray = Ray::new(
+            hit_rec.p,
+            reflected + self.fuzziness * Vec3::random_in_unit_sphere(),
+        );
         if scattered_ray.direction.dot(hit_rec.normal) > 0.0 {
             let attentuation = self.albedo;
             Some((attentuation, scattered_ray))
@@ -81,7 +80,11 @@ impl Material for Metal {
 impl Material for Dielectric {
     fn scatter(&self, ray: &Ray, hit_rec: &HitRecord) -> Option<(RgbColor, Ray)> {
         let attentuation = RgbColor::new(1.0, 1.0, 1.0);
-        let ref_ratio = if hit_rec.front_face { 1.0 / self.refractive_index } else { self.refractive_index };
+        let ref_ratio = if hit_rec.front_face {
+            1.0 / self.refractive_index
+        } else {
+            self.refractive_index
+        };
         let unit_direction = ray.direction.normalized();
 
         let cos_theta = -unit_direction.dot(hit_rec.normal).min(1.0);
