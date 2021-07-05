@@ -1,5 +1,5 @@
 # rustracer
-
+![Sample Output](samples/output-540p.png)
 A simple ray-tracing render engine written in Rust, based on the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 The book was a joy to follow along and I highly recommend having a look at it :)
 
