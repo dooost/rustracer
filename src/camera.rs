@@ -2,6 +2,7 @@ use crate::math::RandomVec;
 use crate::math::Vec3;
 use crate::ray::Ray;
 
+#[derive(Copy, Clone)]
 pub struct Camera {
     origin: Vec3,
     horizontal: Vec3,

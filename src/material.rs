@@ -45,7 +45,7 @@ impl Dielectric {
     }
 }
 
-pub trait Material {
+pub trait Material: Send + Sync {
     fn scatter(&self, ray: &Ray, hit_rec: &HitRecord) -> Option<(RgbColor, Ray)>;
 }
 

@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::material::{Dielectric, Lambertian, Material, Metal};
 use crate::math::{RandomVec, Vec3};
@@ -10,21 +10,21 @@ pub struct HitRecord {
     pub normal: Vec3,
     pub t: f32,
     pub front_face: bool,
-    pub material: Rc<dyn Material>,
+    pub material: Arc<dyn Material>,
 }
 
-pub trait Hittable {
+pub trait Hittable: Send + Sync {
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
 }
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
-    pub material: Rc<dyn Material>,
+    pub material: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f32, material: Rc<dyn Material>) -> Self {
+    pub fn new(center: Vec3, radius: f32, material: Arc<dyn Material>) -> Self {
         Sphere {
             center,
             radius,
@@ -70,7 +70,7 @@ impl Hittable for Sphere {
             front_face = true;
         }
 
-        let material = Rc::clone(&self.material);
+        let material = Arc::clone(&self.material);
         Some(HitRecord {
             p,
             normal,
@@ -82,7 +82,7 @@ impl Hittable for Sphere {
 }
 
 pub struct HittableList {
-    objects: Vec<Rc<dyn Hittable>>,
+    objects: Vec<Arc<dyn Hittable>>,
 }
 
 impl HittableList {
@@ -94,8 +94,8 @@ impl HittableList {
         let mut world = HittableList::new();
 
         // Ground
-        let ground_mtl = Rc::new(Lambertian::new(Vec3::new(0.5, 0.5, 0.5)));
-        world.add(Rc::new(Sphere::new(
+        let ground_mtl = Arc::new(Lambertian::new(Vec3::new(0.5, 0.5, 0.5)));
+        world.add(Arc::new(Sphere::new(
             Vec3::new(0.0, -1000.0, 0.0),
             1000.0,
             ground_mtl.clone(),
@@ -112,8 +112,6 @@ impl HittableList {
                 );
                 let choose_mtl: f32 = rng.gen();
 
-                // let sphere_mtl: Rc<dyn Material>;
-
                 if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).mag() <= 0.9 {
                     continue;
                 }
@@ -121,8 +119,8 @@ impl HittableList {
                 if choose_mtl < 0.8 {
                     // diffuse
                     let albedo = Vec3::random() * Vec3::random();
-                    let sphere_mtl = Rc::new(Lambertian::new(albedo));
-                    world.add(Rc::new(Sphere::new(
+                    let sphere_mtl = Arc::new(Lambertian::new(albedo));
+                    world.add(Arc::new(Sphere::new(
                         sphere_center,
                         sphere_radius,
                         sphere_mtl.clone(),
@@ -131,15 +129,15 @@ impl HittableList {
                     // metal
                     let albedo = Vec3::random_bounded(0.5, 1.0);
                     let fuzziness = rng.gen_range(0.0..0.5);
-                    let sphere_mtl = Rc::new(Metal::new(albedo, fuzziness));
-                    world.add(Rc::new(Sphere::new(
+                    let sphere_mtl = Arc::new(Metal::new(albedo, fuzziness));
+                    world.add(Arc::new(Sphere::new(
                         sphere_center,
                         sphere_radius,
                         sphere_mtl.clone(),
                     )));
                 } else {
-                    let sphere_mtl = Rc::new(Dielectric::new(1.5));
-                    world.add(Rc::new(Sphere::new(
+                    let sphere_mtl = Arc::new(Dielectric::new(1.5));
+                    world.add(Arc::new(Sphere::new(
                         sphere_center,
                         sphere_radius,
                         sphere_mtl.clone(),
@@ -148,22 +146,22 @@ impl HittableList {
             }
         }
 
-        let material_dielectric = Rc::new(Dielectric::new(1.5));
-        world.add(Rc::new(Sphere::new(
+        let material_dielectric = Arc::new(Dielectric::new(1.5));
+        world.add(Arc::new(Sphere::new(
             Vec3::new(0.0, 1.0, 0.0),
             1.0,
             material_dielectric.clone(),
         )));
 
-        let material_lambertian = Rc::new(Lambertian::new(Vec3::new(0.4, 0.2, 0.1)));
-        world.add(Rc::new(Sphere::new(
+        let material_lambertian = Arc::new(Lambertian::new(Vec3::new(0.4, 0.2, 0.1)));
+        world.add(Arc::new(Sphere::new(
             Vec3::new(-4.0, 1.0, 0.0),
             1.0,
             material_lambertian.clone(),
         )));
 
-        let material_metal = Rc::new(Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0));
-        world.add(Rc::new(Sphere::new(
+        let material_metal = Arc::new(Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0));
+        world.add(Arc::new(Sphere::new(
             Vec3::new(4.0, 1.0, 0.0),
             1.0,
             material_metal.clone(),
@@ -172,7 +170,7 @@ impl HittableList {
         world
     }
 
-    pub fn add(&mut self, object: Rc<dyn Hittable>) {
+    pub fn add(&mut self, object: Arc<dyn Hittable>) {
         self.objects.push(object);
     }
 
