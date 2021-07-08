@@ -37,7 +37,7 @@ fn main() {
     let max_depth = 5;
 
     // World
-    let world = Arc::new(Mutex::new(HittableList::sample_scene()));
+    let world = Arc::new(HittableList::sample_scene());
 
     // let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
     // let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
@@ -71,7 +71,7 @@ fn main() {
                         let v_jitter: f32 = rand::thread_rng().gen();
                         let v = ((j as f32) + v_jitter) / (image_height - 1) as f32;
                         let ray = camera.get_ray(u, v);
-                        color += ray_color(&ray, &*world.lock().unwrap(), max_depth);
+                        color += ray_color(&ray, &*world, max_depth);
                     }
     
                     // The image crate's coordinate system starts from the top left corner,
