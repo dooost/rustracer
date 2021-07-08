@@ -9,7 +9,7 @@ mod math;
 mod ray;
 
 use rand::Rng;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use std::sync::{Arc, Mutex};
 
 use crate::image::Image;
@@ -31,7 +31,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_height = 360;
     let image_width = (image_height as f32 * aspect_ratio) as u32;
-    let mut img = Arc::new(Mutex::new(Image::new(image_width, image_height)));
+    let img = Arc::new(Mutex::new(Image::new(image_width, image_height)));
 
     let samples_per_pixel = 8;
     let max_depth = 5;
