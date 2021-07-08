@@ -56,13 +56,14 @@ fn main() {
     let up = Vec3::new(0.0, 1.0, 0.0);
     let focus_dist = 10.0;
     let aperture = 0.1;
-    let camera = Camera::new(from, at, up, 20.0, aspect_ratio, aperture, focus_dist);
+    let camera = Arc::new(Camera::new(from, at, up, 20.0, aspect_ratio, aperture, focus_dist));
 
     rayon::scope_fifo(|scope| {
         for i in (0..image_width).rev() {
             for j in 0..image_height {
-                let mut img = img.clone();
-                let mut world = world.clone();
+                let img = img.clone();
+                let world = world.clone();
+                let camera = camera.clone();
                 scope.spawn_fifo(move |_| {
                     let mut color = RgbColor::new(0.0, 0.0, 0.0);
                     for _s in 0..samples_per_pixel {
