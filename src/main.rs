@@ -16,7 +16,7 @@ use crate::image::Image;
 use camera::Camera;
 use color::RgbColor;
 use geometry::{Hittable, HittableList};
-use math::Vec3;
+use math::{f32x8, Vec3};
 use ray::Ray;
 
 fn main() {
@@ -33,8 +33,8 @@ fn main() {
     let image_width = (image_height as f32 * aspect_ratio) as u32;
     let img = Arc::new(Mutex::new(Image::new(image_width, image_height)));
 
-    let samples_per_pixel = 512;
-    let max_depth = 50;
+    let samples_per_pixel = 128;
+    let max_depth = 16;
 
     // World
     let world = Arc::new(HittableList::sample_scene());
@@ -64,10 +64,8 @@ fn main() {
                 scope.spawn_fifo(move |_| {
                     let mut color = RgbColor::new(0.0, 0.0, 0.0);
                     for _s in 0..samples_per_pixel {
-                        let u_jitter: f32 = rand::thread_rng().gen();
-                        let u = ((i as f32) + u_jitter) / (image_width - 1) as f32;
-                        let v_jitter: f32 = rand::thread_rng().gen();
-                        let v = ((j as f32) + v_jitter) / (image_height - 1) as f32;
+                        let u = get_jittered_point(i, image_width);
+                        let v = get_jittered_point(j, image_height);
                         let ray = camera.get_ray(u, v);
                         color += ray_color(&ray, &*world, max_depth);
                     }
@@ -90,6 +88,19 @@ fn main() {
 
     let duration = start_time.elapsed();
     println!("Render took {:?}", duration);
+}
+
+fn get_jittered_point(index: u32, size: u32) -> f32 {
+    let jitter: f32 = rand::thread_rng().gen();
+    ((index as f32) + jitter) / (size - 1) as f32
+}
+
+fn get_jittered_points(index: u32, size: u32) -> f32x8 {
+    let mut points = [0.0; 8];
+    for i in 0..8 {
+        points[i] = get_jittered_point(index, size);
+    }
+    f32x8::from(points)
 }
 
 fn ray_color(ray: &Ray, world: &impl Hittable, depth: u32) -> RgbColor {
