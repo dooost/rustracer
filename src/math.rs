@@ -1,4 +1,8 @@
+use std::vec;
+
 pub use ultraviolet::Vec3;
+pub use ultraviolet::Vec3x8;
+pub use ultraviolet::f32x8;
 
 use rand::Rng;
 
@@ -59,5 +63,54 @@ impl RandomVec for Vec3 {
 
     fn random_unit_vec() -> Self {
         Self::random_in_unit_sphere().normalized()
+    }
+}
+
+impl RandomVec for Vec3x8 {
+    fn random() -> Self {
+        Self::create_using_closure(Vec3::random)
+    }
+
+    fn random_bounded(min: f32, max: f32) -> Self {
+        Self::create_using_closure(|| {
+            Vec3::random_bounded(min, max)
+        })
+    }
+
+    fn random_in_unit_sphere() -> Self {
+        Self::create_using_closure(|| {
+            Vec3::random_in_unit_sphere()
+        })
+    }
+
+    fn random_in_unit_disk() -> Self {
+        Self::create_using_closure(|| {
+            Vec3::random_in_unit_disk()
+        })
+    }
+
+    fn random_unit_vec() -> Self {
+        Self::create_using_closure(|| {
+            Vec3::random_unit_vec()
+        })
+    }
+}
+
+pub trait WideFromClosure<T> {
+    fn create_using_closure<F>(creator: F) -> Self
+    where
+        F: Fn() -> T;
+}
+
+impl WideFromClosure<Vec3> for Vec3x8 {
+    fn create_using_closure<F>(creator: F) -> Self
+    where
+        F: Fn() -> Vec3,
+    {
+        let mut vectors = [Vec3::zero(); 8];
+        for i in 0..8 {
+            vectors[i] = creator();
+        }
+        Vec3x8::from(vectors)
     }
 }
