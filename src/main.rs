@@ -9,8 +9,8 @@ mod math;
 mod ray;
 
 use rand::Rng;
-use std::time::Instant;
 use std::sync::{Arc, Mutex};
+use std::time::Instant;
 
 use crate::image::Image;
 use camera::Camera;
@@ -24,7 +24,7 @@ fn main() {
         .num_threads(num_cpus::get())
         .build_global()
         .unwrap();
-    
+
     let start_time = Instant::now();
 
     // Image
@@ -45,7 +45,15 @@ fn main() {
     let up = Vec3::new(0.0, 1.0, 0.0);
     let focus_dist = 10.0;
     let aperture = 0.1;
-    let camera = Arc::new(Camera::new(from, at, up, 20.0, aspect_ratio, aperture, focus_dist));
+    let camera = Arc::new(Camera::new(
+        from,
+        at,
+        up,
+        20.0,
+        aspect_ratio,
+        aperture,
+        focus_dist,
+    ));
 
     rayon::scope_fifo(|scope| {
         for i in (0..image_width).rev() {
@@ -63,11 +71,16 @@ fn main() {
                         let ray = camera.get_ray(u, v);
                         color += ray_color(&ray, &*world, max_depth);
                     }
-    
+
                     // The image crate's coordinate system starts from the top left corner,
                     // but ours is from the bottom left, so we need to flip it vertically
                     let j_in_image_coords = image_height - j - 1;
-                    img.lock().unwrap().set_color_at(i, j_in_image_coords, color, samples_per_pixel);
+                    img.lock().unwrap().set_color_at(
+                        i,
+                        j_in_image_coords,
+                        color,
+                        samples_per_pixel,
+                    );
                 });
             }
         }

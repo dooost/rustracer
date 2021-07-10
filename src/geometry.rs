@@ -98,11 +98,31 @@ impl HittableList {
         let material_left = Arc::new(Dielectric::new(1.5));
         let material_right = Arc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.1));
 
-        world.add(Arc::new(Sphere::new(Vec3::new(0.0,-100.5,-1.0), 100.0, material_ground.clone())));
-        world.add(Arc::new(Sphere::new(Vec3::new(0.0,0.0,-1.0), 0.5, material_center.clone())));
-        world.add(Arc::new(Sphere::new(Vec3::new(1.0,0.0,-1.0), 0.5, material_right.clone())));
-        world.add(Arc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), 0.5, material_left.clone())));
-        world.add(Arc::new(Sphere::new(Vec3::new(-1.0,0.0,-1.0), -0.4, material_left.clone())));
+        world.add(Arc::new(Sphere::new(
+            Vec3::new(0.0, -100.5, -1.0),
+            100.0,
+            material_ground.clone(),
+        )));
+        world.add(Arc::new(Sphere::new(
+            Vec3::new(0.0, 0.0, -1.0),
+            0.5,
+            material_center.clone(),
+        )));
+        world.add(Arc::new(Sphere::new(
+            Vec3::new(1.0, 0.0, -1.0),
+            0.5,
+            material_right.clone(),
+        )));
+        world.add(Arc::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            0.5,
+            material_left.clone(),
+        )));
+        world.add(Arc::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            -0.4,
+            material_left.clone(),
+        )));
 
         world
     }
