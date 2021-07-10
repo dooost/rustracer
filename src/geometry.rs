@@ -31,10 +31,8 @@ impl Sphere {
             material,
         }
     }
-}
 
-impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit_point(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<f32> {
         let oc: Vec3 = ray.origin - self.center;
         let a = ray.direction.mag_sq();
         let half_b = oc.dot(ray.direction);
@@ -54,7 +52,13 @@ impl Hittable for Sphere {
             }
         }
 
-        let t = root;
+        Some(root)
+    }
+}
+
+impl Hittable for Sphere {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let t = self.hit_point(ray, t_min, t_max)?;
         let p = ray.at(t);
         let outwards_normal = (p - self.center) / self.radius;
 
