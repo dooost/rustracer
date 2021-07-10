@@ -33,11 +33,11 @@ fn main() {
     let image_width = (image_height as f32 * aspect_ratio) as u32;
     let img = Arc::new(Mutex::new(Image::new(image_width, image_height)));
 
-    let samples_per_pixel = 128;
-    let max_depth = 16;
+    let samples_per_pixel = 512;
+    let max_depth = 50;
 
     // World
-    let world = Arc::new(HittableList::light_test_scene());
+    let world = Arc::new(HittableList::sample_scene());
 
     // Camera
     let from = Vec3::new(13.0, 2.0, 3.0);
