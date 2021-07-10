@@ -1,5 +1,5 @@
 use crate::math::RandomVec;
-use crate::math::{Vec3, Vec3x8, f32x8};
+use crate::math::{f32x8, Vec3, Vec3x8};
 use crate::ray::{Ray, Ray8};
 
 pub struct Camera {
@@ -60,9 +60,13 @@ impl Camera {
     pub fn get_ray8(&self, u8: f32x8, v8: f32x8) -> Ray8 {
         let origin = Vec3x8::splat(self.origin);
         let points_on_lens = f32x8::splat(self.lens_radius) * Vec3x8::random_in_unit_disk();
-        let offset = Vec3x8::splat(self.u) * points_on_lens.x + Vec3x8::splat(self.v) * points_on_lens.y;
-        let direction =
-        Vec3x8::splat(self.lower_left_corner) + u8 * Vec3x8::splat(self.horizontal) + v8 * Vec3x8::splat(self.vertical) - origin - offset;
+        let offset =
+            Vec3x8::splat(self.u) * points_on_lens.x + Vec3x8::splat(self.v) * points_on_lens.y;
+        let direction = Vec3x8::splat(self.lower_left_corner)
+            + u8 * Vec3x8::splat(self.horizontal)
+            + v8 * Vec3x8::splat(self.vertical)
+            - origin
+            - offset;
         Ray8::new(origin + offset, direction)
     }
 }

@@ -1,8 +1,8 @@
 use std::vec;
 
+pub use ultraviolet::f32x8;
 pub use ultraviolet::Vec3;
 pub use ultraviolet::Vec3x8;
-pub use ultraviolet::f32x8;
 
 use rand::Rng;
 
@@ -72,27 +72,19 @@ impl RandomVec for Vec3x8 {
     }
 
     fn random_bounded(min: f32, max: f32) -> Self {
-        Self::create_using_closure(|| {
-            Vec3::random_bounded(min, max)
-        })
+        Self::create_using_closure(|| Vec3::random_bounded(min, max))
     }
 
     fn random_in_unit_sphere() -> Self {
-        Self::create_using_closure(|| {
-            Vec3::random_in_unit_sphere()
-        })
+        Self::create_using_closure(|| Vec3::random_in_unit_sphere())
     }
 
     fn random_in_unit_disk() -> Self {
-        Self::create_using_closure(|| {
-            Vec3::random_in_unit_disk()
-        })
+        Self::create_using_closure(|| Vec3::random_in_unit_disk())
     }
 
     fn random_unit_vec() -> Self {
-        Self::create_using_closure(|| {
-            Vec3::random_unit_vec()
-        })
+        Self::create_using_closure(|| Vec3::random_unit_vec())
     }
 }
 
